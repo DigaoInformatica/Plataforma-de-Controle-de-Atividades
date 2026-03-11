@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Sistema</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="auth-page"> 
+
+    <div class="login-container">
+        
+        <div class="tabs">
+            <a href="{{ url_for('main.login') }}" class="tab">Login</a>
+            <span class="tab active">Criar Conta</span>
+        </div>
+        
+        <h2>Cadastro de Usuário</h2>
+        
+        <form method="POST" action="{{ url_for('main.cadastro') }}">
+            <div class="input-group">
+                <label>Nome Completo</label>
+                <input type="text" name="nome" placeholder="Ex: João Silva" required>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="seu@email.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Crie uma senha forte" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">Cadastrar</button>
+            
+            <div class="form-footer">
+                <span>Já tem uma conta?</span>
+                <a href="{{ url_for('main.login') }}">Fazer Login</a>
+            </div>
+        </form>
+    </div>
+
+    <button id="theme-toggle" class="theme-btn" title="Alternar Tema">
+        <i id="theme-icon" class="fas fa-sun"></i>
+    </button>
+
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            
+            if (document.body.classList.contains('light-mode')) {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+    </script>
+</body>
+</html>
