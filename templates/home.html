@@ -2,117 +2,113 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Controle de Atividades</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
+<body class="dashboard-page">
 
-<div class="sidebar">
-
-    <div class="logo">
-        CONTROLE AC
+    <div class="sidebar">
+        <div class="logo">CONTROLE AC</div>
+        <nav>
+            <a href="#" class="active"><i class="fas fa-home"></i> Início</a>
+            <a href="#"><i class="fas fa-tasks"></i> Atividades</a>
+            <a href="{{ url_for('main.logout') }}" class="logout">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
+        </nav>
     </div>
 
-    <nav>
-        <a href="#" class="active">
-            <i class="fas fa-home"></i> Início
-        </a>
+    <main class="content">
+        <header class="main-header">
+            <div class="user-info">
+                <h1>Bem-vindo, <span>{{ usuario }}</span> 👋</h1>
+                <p>Gerencie suas atividades de forma simples e organizada.</p>
+            </div>
+        </header>
 
-        <a href="#">
-            <i class="fas fa-tasks"></i> Atividades
-        </a>
+        <section class="tasks-container">
+            <div class="tasks-controls">
+                <h2><i class="fas fa-list-check"></i> Minhas Atividades</h2>
 
-        <a href="{{ url_for('main.logout') }}" class="logout">
-            <i class="fas fa-sign-out-alt"></i> Sair
-        </a>
-    </nav>
-
-</div>
-
-<main class="content">
-
-    <header class="main-header">
-
-        <div class="user-info">
-            <h1>Bem-vindo, <span>{{ nome }}</span> 👋</h1>
-            <p>Esta é sua plataforma de controle de atividades.</p>
-        </div>
-
-    </header>
-
-
-    <section class="tasks-container">
-
-        <div class="tasks-controls">
-            <h2>
-                <i class="fas fa-tasks"></i>
-                Minhas Atividades
-            </h2>
-        </div>
-
-        <div class="task-grid">
-
-            <!-- Mensagem temporária até o CRUD de tarefas -->
-            <div class="empty-state">
-
-                <i class="fas fa-clipboard-list"></i>
-
-                <h3>Nenhuma atividade cadastrada</h3>
-
-                <p>
-                    Na próxima etapa do projeto será possível criar
-                    e gerenciar suas atividades aqui.
-                </p>
-
+                <div class="add-task-container">
+                    <form action="{{ url_for('main.criar_tarefa') }}" method="POST" class="task-form-inline">
+                        <input type="text" name="descricao" placeholder="O que vamos fazer hoje?" required>
+                        <button type="submit" class="btn-add">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </form>
+                </div>
             </div>
 
-        </div>
+            <div class="task-grid">
+                {% if tarefas %}
+                    {% for tarefa in tarefas %}
+                        <div class="task-card">
+                            <div class="card-header">
+                                <i class="fas fa-thumbtack pin-icon"></i>
+                                <h3>{{ tarefa.descricao }}</h3>
+                            </div>
 
-    </section>
+                            <div class="card-body">
+                                <form action="{{ url_for('main.editar_tarefa', id=tarefa.id) }}" method="POST" class="edit-form-card">
+                                    <input type="text" name="descricao" placeholder="Editar..." required>
+                                    <button type="submit" class="btn-save-icon" title="Salvar">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            </div>
 
-</main>
+                            <div class="card-footer">
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('main.detalhe_tarefa', id=tarefa.id) }}" class="btn-icon-view" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
+                                    <a href="{{ url_for('main.excluir_tarefa', id=tarefa.id) }}" class="btn-icon-delete" title="Excluir">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state-full">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>Nenhuma atividade por aqui</h3>
+                        <p>Use o campo acima para registrar sua primeira tarefa!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
 
-<button id="theme-toggle" class="theme-btn" title="Alternar Tema">
-    <i id="theme-icon" class="fas fa-sun"></i>
-</button>
+    <button id="theme-toggle" class="theme-btn" title="Alternar Tema">
+        <i id="theme-icon" class="fas fa-sun"></i>
+    </button>
 
+    <script>
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
 
-<script>
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
 
-const themeBtn = document.getElementById('theme-toggle');
-const themeIcon = document.getElementById('theme-icon');
-
-themeBtn.addEventListener('click', () => {
-
-    document.body.classList.toggle('light-mode');
-
-    if (document.body.classList.contains('light-mode')) {
-
-        themeIcon.classList.replace('fa-sun','fa-moon');
-        localStorage.setItem('theme','light');
-
-    } else {
-
-        themeIcon.classList.replace('fa-moon','fa-sun');
-        localStorage.setItem('theme','dark');
-
-    }
-
-});
-
-
-if(localStorage.getItem('theme') === 'light'){
-
-    document.body.classList.add('light-mode');
-    themeIcon.classList.replace('fa-sun','fa-moon');
-
-}
-
-</script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+    </script>
 
 </body>
 </html>
