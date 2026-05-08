@@ -45,17 +45,24 @@
 
             <div class="task-grid">
                 {% if tarefas %}
-                    {% for tarefa in tarefas %}
+                    {% for item in tarefas %}
                         <div class="task-card">
+
                             <div class="card-header">
                                 <i class="fas fa-thumbtack pin-icon"></i>
-                                <h3>{{ tarefa.descricao }}</h3>
+                                <h3>{{ item.atividade.descricao }}</h3>
+
+                                {% if item.concluida %}
+                                    <span style="color: lime; font-weight: bold;">✔ Concluída</span>
+                                {% else %}
+                                    <span style="color: orange; font-weight: bold;">⏳ Em andamento</span>
+                                {% endif %}
                             </div>
 
                             <div class="card-body">
-                                <form action="{{ url_for('main.editar_tarefa', id=tarefa.id) }}" method="POST" class="edit-form-card">
+                                <form action="{{ url_for('main.editar_tarefa', id=item.atividade.id) }}" method="POST" class="edit-form-card">
                                     <input type="text" name="descricao" placeholder="Editar..." required>
-                                    <button type="submit" class="btn-save-icon" title="Salvar">
+                                    <button type="submit" class="btn-save-icon">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </form>
@@ -63,15 +70,23 @@
 
                             <div class="card-footer">
                                 <div class="action-buttons">
-                                    <a href="{{ url_for('main.detalhe_tarefa', id=tarefa.id) }}" class="btn-icon-view" title="Ver detalhes">
+
+                                    <!-- 👁️ -->
+                                    <a href="{{ url_for('main.detalhe_tarefa', id=item.atividade.id) }}" class="btn-icon-view">
                                         <i class="fas fa-eye"></i>
                                     </a>
 
-                                    <a href="{{ url_for('main.excluir_tarefa', id=tarefa.id) }}" class="btn-icon-delete" title="Excluir">
+                                    <!-- 🗑️ COM POPUP -->
+                                    <a href="{{ url_for('main.excluir_tarefa', id=item.atividade.id) }}"
+                                       class="btn-icon-delete"
+                                       title="Excluir"
+                                       onclick="return confirm('⚠️ Deseja realmente excluir essa atividade e todas as tarefas?')">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+
                                 </div>
                             </div>
+
                         </div>
                     {% endfor %}
                 {% else %}
@@ -85,7 +100,7 @@
         </section>
     </main>
 
-    <button id="theme-toggle" class="theme-btn" title="Alternar Tema">
+    <button id="theme-toggle" class="theme-btn">
         <i id="theme-icon" class="fas fa-sun"></i>
     </button>
 
@@ -95,6 +110,7 @@
 
         themeBtn.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
+            
             if (document.body.classList.contains('light-mode')) {
                 themeIcon.classList.replace('fa-sun', 'fa-moon');
                 localStorage.setItem('theme', 'light');
